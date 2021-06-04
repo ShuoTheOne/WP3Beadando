@@ -29,7 +29,6 @@ class Library extends CI_Controller {
           'records' => $this->library_model->get_list()
         ];
         
-       
         $this->load->view('library/list', $view_params);
         }
         else{ //részletes nézet
@@ -47,16 +46,14 @@ class Library extends CI_Controller {
                 'title' => 'Részletes rekordatatok',
                 'record' => $record
             ];
-            
-          
-            $this->load->view('library/show',$view_params);
-            
-        }
-    
+ 
+            $this->load->view('library/show',$view_params);     
+        } 
     }
     
     public function insert() {
-            echo 'insert';
+        $this->load->helper('form');
+        $this->load->view('library/add');
     }
     
     public function update(){
