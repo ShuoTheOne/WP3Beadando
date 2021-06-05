@@ -20,7 +20,7 @@ class Buildings_model extends CI_Model{
     }
     
     public function get_list(){
-            $this->db->select('b.id','b.kod','b.name','l.name library_name');
+            $this->db->select('b.id, b.kod, b.name, l.name library_name');
             $this->db->from('buildings b');
             $this->db->join('libraries l', 'l.id = b.library_id', 'inner');
             $this->db-> order_by('l.name','ASC');
@@ -28,4 +28,27 @@ class Buildings_model extends CI_Model{
             
             return $this->db->get()->result();
         }
+        
+        
+     public function insert($library_id, $kod, $name, $active, $description){
+        $record = [
+            'library_id' =>  $library_id, 
+            'kod'       =>  $kod, 
+            'name'       =>  $name, 
+            'active'     =>  $active, 
+            'description'    =>  $description
+        ];
+        
+        $this->db->insert('buildings', $record);
+        return $this->db->insert_id();
+    }
+    
+    public function get_record_by_kod_library_id($kod, $library_id){
+        $this->db->select('*');
+        $this->db->from('buildings');
+        $this->db->where('kod', $kod);
+        $this->db->where('library_id', $library_id);
+        
+        return $this->db->get()->result();
+    }
 }

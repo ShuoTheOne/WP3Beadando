@@ -16,11 +16,17 @@ class Catalogs extends CI_Controller{
     public function __construct(){
         parent::__construct();
         
+         //$this->load->helper('url');
         $this->load->model('catalogs_model','c_model');
     }
     
     public function list(){
+        $view_params = [
+            'title' => 'Katalógusok listája',
+            'records' => $this->c_model->get_list()
+        ];
         
+        $this->load->view('catalogs/list',$view_params);
     }
     public function insert(){}
     public function update(){}

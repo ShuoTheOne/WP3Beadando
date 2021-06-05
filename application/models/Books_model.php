@@ -28,4 +28,26 @@ class Books_model extends CI_Model{
             
             return $this->db->get()->result();
         }
+        
+         public function insert($buildings_id, $booknumber, $name, $active, $description){
+        $record = [
+            'buildings_id' =>  $buildings_id, 
+            'booknumber'       =>  $booknumber, 
+            'name'       =>  $name, 
+            'active'     =>  $active, 
+            'description'    =>  $description
+        ];
+        
+        $this->db->insert('books', $record);
+        return $this->db->insert_id();
+    }
+    
+    public function get_record_by_booknumber_buildings_id($booknumber, $buildings_id){
+        $this->db->select('*');
+        $this->db->from('books');
+        $this->db->where('booknumber', $booknumber);
+        $this->db->where('buildings_id', $buildings_id);
+        
+        return $this->db->get()->result();
+    }
 }
