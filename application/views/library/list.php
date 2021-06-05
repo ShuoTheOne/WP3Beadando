@@ -19,6 +19,7 @@
                 <td>
                     <?php echo anchor(base_url('library/list/'.$record->id), 'Részletek'); ?>
                     <?php echo anchor(base_url('library/delete/'.$record->id), 'Törlés'); ?>
+                    <?php echo anchor(base_url('library/update/'.$record->id), 'Szerkesztés'); ?>
                 </td>
             </tr>
             <?php endforeach; ?>

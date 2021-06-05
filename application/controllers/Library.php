@@ -78,8 +78,48 @@ class Library extends CI_Controller {
         
         }
     
-    public function update(){
-        echo 'update';     
+    public function update($library_id = NULL){
+        $this->load->helper('url');
+        if($library_id == NULL){
+            redriect(base_url('library/list'));
+        }
+        if(!is_numeric($library_id)){
+            redirect(base_url('library/list'));
+        }
+        
+        $record = $this->library_model->get_one($library_id);
+        
+        if($record == NULL || empty($record)){
+            redirect(base_url('library/list'));
+        }
+        
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('library_name','Könyvtár neve', 'required|min_length[2]');
+        $this->form_validation->set_rules('library_active','Könyvtár státusza', 'required');
+        
+        if($this->form_validation->run() == TRUE){
+            $name = $this->input->post('library_name');
+            $description = !empty($this->input->post('library_description')) ? $this->input->post('library_description') : NULL;
+            $active=$this->input->post('library_active');
+            
+            if($this->library_model->update($library_id,$name,$description,$active)){
+                redirect(base_url('library/list'));
+            }
+            else{
+                show_error('Sikertelen frissítés!');
+            }
+         }
+        else{
+             $view_params = [
+              'record' => $record,
+              'status'=> [1=>'Active', 0=>'Inactive']
+          ];
+        
+          $this->load->helper('form');
+          $this->load->view('library/edit', $view_params);
+        }
+        
+   
     }
     
     public function delete($library_id = NULL) {
