@@ -46,4 +46,16 @@ class Library_model extends CI_Model{
         $this->db->where('active',1);
        return $this->db->delete('libraries');
     }
+    
+    public function insert($name,$description)
+    {
+        $record = [
+            'name' => $name,
+            'description' => $description
+        ];
+        
+        $this->db->insert('libraries',$record);
+        
+        return $this->db->insert_id();
+    }
 }

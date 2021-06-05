@@ -52,9 +52,31 @@ class Library extends CI_Controller {
     }
     
     public function insert() {
-        $this->load->helper('form');
-        $this->load->view('library/add');
-    }
+        
+        $this->load->library('form_validation'); //this->form_validation létrejön
+        $this->form_validation->set_rules('library_name','Könyvtár neve', 'required|min_length[2]');
+        
+        
+        if($this->form_validation->run() == TRUE){
+            $name=$this->input->post('library_name');
+            $description = !empty($this->input->post('library_description')) ? $this->input->post('library_description') : NULL;
+            
+            $id=$this->library_model->insert($name,$description);
+            if($id){
+                $this->load->helper('url');
+                redirect(base_url('library/list/'.$id));
+            }
+            else{
+                show_error('Hiba a beszúrás során');
+            }
+            
+        }
+        else{
+            $this->load->helper('form');
+            $this->load->view('library/add');
+        }
+        
+        }
     
     public function update(){
         echo 'update';     
