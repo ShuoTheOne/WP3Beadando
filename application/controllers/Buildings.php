@@ -32,8 +32,6 @@ class Buildings extends CI_Controller{
     }
     
     public function check_library_building($param_1, $param_2){
-        //$param_3 = $this->input->post('campus_id');
-        //var_dump($param_3);
         
         $records = $this->b_model->get_record_by_kod_library_id($param_1, $param_2);
         

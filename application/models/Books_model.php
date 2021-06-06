@@ -20,7 +20,7 @@ class Books_model extends CI_Model{
     }
     
     public function get_list(){
-            $this->db->select('bo.id','bo.booknumber','bo.name','b.name buildings_name');
+            $this->db->select('bo.id, bo.booknumber, bo.name, b.name buildings_name');
             $this->db->from('books bo');
             $this->db->join('buildings b', 'b.id = bo.buildings_id', 'inner');
             $this->db-> order_by('b.name','ASC');

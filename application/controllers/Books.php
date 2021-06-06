@@ -30,18 +30,18 @@ class Books extends CI_Controller{
     }
     public function check_buildings_building($param_1, $param_2){
         
-        $records = $this->b_model->get_record_by_booknumber_buildings_id($param_1, $param_2);
+        $records = $this->bo_model->get_record_by_booknumber_buildings_id($param_1, $param_2);
         
         if($records == null || empty($records)){
             return TRUE;
         }
         else{
-            $this->form_validation->set_message('check_buildings_building', 'Az könyv kódja nem egyedi az épület helyén!');
+            $this->form_validation->set_message('check_buildings_building', 'A könyv kódja nem egyedi az épület helyén!');
             return FALSE;
         }
     }
     public function insert(){
-        $this->load->buildings('form_validation');
+        $this->load->library('form_validation');
         
         $this->form_validation->set_rules('booknumber', 'Könyv kódja', 'required|callback_check_buildings_building['.$this->input->post('buildings_id').']');
         $this->form_validation->set_rules('name', 'Könyv neve', 'required');
@@ -50,7 +50,7 @@ class Books extends CI_Controller{
         
         
         if($this->form_validation->run() === TRUE){
-            if($this->b_model->insert(
+            if($this->bo_model->insert(
                     $this->input->post('buildings_id'),
                     $this->input->post('booknumber'),
                     $this->input->post('name'),   
