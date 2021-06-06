@@ -49,6 +49,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'welcome';
+$route['default_controller'] = 'library';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route['library/list/(:num)'] = 'library/index/$1';
+$route['library/list'] = 'library/index';
+$route ['könyvtárak'] = 'library/index';
+
+$route['buildings/list/(:num)'] = 'buildings/index/$1';
+$route['buildings/list'] = 'buildings/index';
+$route ['épületek'] = 'buildings/index';
+
+$route['books/list/(:num)'] = 'books/index/$1';
+$route['books/list'] = 'books/index';
+$route ['könyvek'] = 'books/index';
+
+$route['catalogs/list/(:num)'] = 'catalogs/index/$1';
+$route['catalogs/list'] = 'catalogs/index';
+$route ['katalógusok'] = 'catalogs/index';

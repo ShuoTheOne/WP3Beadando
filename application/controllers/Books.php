@@ -20,13 +20,36 @@ class Books extends CI_Controller{
         $this->load->model('books_model','bo_model');
     }
     
-    public function list(){
+    public function index($books_id = NULL) //listázás
+    {
+        $this->load->helper('url'); // központilag betölteni, hiszen ez az if ágon kívül is kell
+        if($books_id == NULL)
+        {
         $view_params = [
-            'title' => 'Könyvek listája',
-            'records' => $this->bo_model->get_list()
+          'title'   => 'Könyvek listája',
+          'records' => $this->bo_model->get_list()
         ];
         
-        $this->load->view('books/list',$view_params);
+        $this->load->view('books/list', $view_params);
+        }
+        else{ //részletes nézet
+            if(!is_numeric($books_id)){
+                show_error('Nem helyes paraméterérték');
+            }
+            
+            $record = $this->bo_model->get_one($books_id);
+            
+            if($record == NULL || empty($record)) {
+                show_error('Az id-vel nem létezik aktív rekord');
+            }
+            
+            $view_params = [
+                'title' => 'Részletes rekordatatok',
+                'record' => $record
+            ];
+ 
+            $this->load->view('books/show',$view_params);     
+        } 
     }
     public function check_buildings_building($param_1, $param_2){
         
@@ -79,8 +102,72 @@ class Books extends CI_Controller{
             $this->load->view('books/insert', $view_params);      
         }
     }
-    public function update(){}
-    public function delete(){}
+    public function update($books_id = NULL){
+        $this->load->helper('url');
+        if($books_id == NULL){
+            redriect(base_url('books/list'));
+        }
+        if(!is_numeric($books_id)){
+            redirect(base_url('books/list'));
+        }
+        
+        $record = $this->bo_model->get_one($books_id);
+        
+        if($record == NULL || empty($record)){
+            redirect(base_url('books/list'));
+        }
+        
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('books_name','Katalógus neve', 'required|min_length[2]');
+        $this->form_validation->set_rules('books_active','Katalógus státusza', 'required');
+        
+        if($this->form_validation->run() == TRUE){
+            $name = $this->input->post('books_name');
+            $description = !empty($this->input->post('books_description')) ? $this->input->post('books_description') : NULL;
+            $active=$this->input->post('books_active');
+            
+            if($this->bo_model->update($books_id,$name,$description,$active)){
+                redirect(base_url('books/list'));
+            }
+            else{
+                show_error('Sikertelen frissítés!');
+            }
+         }
+        else{
+             $view_params = [
+              'record' => $record,
+              'status'=> [1=>'Active', 0=>'Inactive']
+          ];
+        
+          $this->load->helper('form');
+          $this->load->view('books/edit', $view_params);
+        }
+        
+   
+    }
+     public function delete($books_id = NULL) {
+        $this->load->helper('url'); // mindig töltsük be a helpert, ha pl. redirectelünk
+        if($books_id==NULL){
+            redirect(base_url('books/list'));
+        }
+        
+        if(!is_numeric($books_id)){
+            redirect(base_url('books/list'));
+        }
+        
+        $record=$this->bo_model->get_one($books_id);
+        if($record == NULl || empty($record)){
+            redirect(base_url('books/list'));
+        }
+        
+      if(  $this->bo_model->delete($books_id)){
+          redirect(base_url('books/list'));
+      }
+      else{
+          show_error('A törlés sikertelen!');
+      }
+        
+    }
     
     
     

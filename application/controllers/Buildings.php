@@ -20,15 +20,36 @@ class Buildings extends CI_Controller{
         $this->load->model('buildings_model','b_model');
     }
     
-    public function list(){
-        
+    public function index($buildings_id = NULL) //listázás
+    {
+        $this->load->helper('url'); // központilag betölteni, hiszen ez az if ágon kívül is kell
+        if($buildings_id == NULL)
+        {
         $view_params = [
-            'title' => 'Épületek listája',
-            'records' => $this->b_model->get_list()
+          'title'   => 'Épületek listája',
+          'records' => $this->b_model->get_list()
         ];
         
-        $this->load->view('buildings/list',$view_params);
-        
+        $this->load->view('buildings/list', $view_params);
+        }
+        else{ //részletes nézet
+            if(!is_numeric($buildings_id)){
+                show_error('Nem helyes paraméterérték');
+            }
+            
+            $record = $this->b_model->get_one($buildings_id);
+            
+            if($record == NULL || empty($record)) {
+                show_error('Az id-vel nem létezik aktív rekord');
+            }
+            
+            $view_params = [
+                'title' => 'Részletes rekordatatok',
+                'record' => $record
+            ];
+ 
+            $this->load->view('buildings/show',$view_params);     
+        } 
     }
     
     public function check_library_building($param_1, $param_2){
@@ -82,8 +103,72 @@ class Buildings extends CI_Controller{
             $this->load->view('buildings/insert', $view_params);      
         }
     }
-    public function update(){}
-    public function delete(){}
+     public function update($buildings_id = NULL){
+        $this->load->helper('url');
+        if($buildings_id == NULL){
+            redriect(base_url('buildings/list'));
+        }
+        if(!is_numeric($buildings_id)){
+            redirect(base_url('buildings/list'));
+        }
+        
+        $record = $this->b_model->get_one($buildings_id);
+        
+        if($record == NULL || empty($record)){
+            redirect(base_url('buildings/list'));
+        }
+        
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('buildings_name','Épület neve', 'required|min_length[2]');
+        $this->form_validation->set_rules('buildings_active','Épület státusza', 'required');
+        
+        if($this->form_validation->run() == TRUE){
+            $name = $this->input->post('buildings_name');
+            $description = !empty($this->input->post('buildings_description')) ? $this->input->post('buildings_description') : NULL;
+            $active=$this->input->post('buildings_active');
+            
+            if($this->b_model->update($buildings_id,$name,$description,$active)){
+                redirect(base_url('buildings/list'));
+            }
+            else{
+                show_error('Sikertelen frissítés!');
+            }
+         }
+        else{
+             $view_params = [
+              'record' => $record,
+              'status'=> [1=>'Active', 0=>'Inactive']
+          ];
+        
+          $this->load->helper('form');
+          $this->load->view('buildings/edit', $view_params);
+        }
+        
+   
+    }
+        public function delete($buildings_id = NULL) {
+        $this->load->helper('url'); // mindig töltsük be a helpert, ha pl. redirectelünk
+        if($buildings_id==NULL){
+            redirect(base_url('buildings/list'));
+        }
+        
+        if(!is_numeric($buildings_id)){
+            redirect(base_url('buildings/list'));
+        }
+        
+        $record=$this->b_model->get_one($buildings_id);
+        if($record == NULl || empty($record)){
+            redirect(base_url('buildings/list'));
+        }
+        
+      if(  $this->b_model->delete($buildings_id)){
+          redirect(base_url('buildings/list'));
+      }
+      else{
+          show_error('A törlés sikertelen!');
+      }
+        
+    }
     
     
     

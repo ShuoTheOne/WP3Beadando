@@ -17,9 +17,11 @@ class Library extends CI_Controller {
         parent::__construct();
         
         $this->load->model('library_model');
+       
+        $this->lang->load('library');
     }
     
-    public function list($library_id = NULL) //listázás
+    public function index($library_id = NULL) //listázás
     {
         $this->load->helper('url'); // központilag betölteni, hiszen ez az if ágon kívül is kell
         if($library_id == NULL)
@@ -75,8 +77,7 @@ class Library extends CI_Controller {
             $this->load->helper('form');
             $this->load->view('library/add');
         }
-        
-        }
+    }
     
     public function update($library_id = NULL){
         $this->load->helper('url');

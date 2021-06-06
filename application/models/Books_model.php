@@ -29,6 +29,15 @@ class Books_model extends CI_Model{
             return $this->db->get()->result();
         }
         
+    public function get_one($id){
+        $this->db->select('bo.id, bo.booknumber, bo.buildings_id, bo.name,bo.description,bo.active');
+        $this->db->from('books bo');
+        $this->db->where('id',$id);
+        $this->db->where('active',1);
+        
+        return $this->db->get()->row();
+    }
+        
          public function insert($buildings_id, $booknumber, $name, $active, $description){
         $record = [
             'buildings_id' =>  $buildings_id, 
@@ -40,6 +49,23 @@ class Books_model extends CI_Model{
         
         $this->db->insert('books', $record);
         return $this->db->insert_id();
+    }
+    
+    public function delete($id){
+        $this->db->where('id',$id);
+        $this->db->where('active',1);
+       return $this->db->delete('books');
+    }
+    
+    public function update($id, $name, $description, $active){
+        $record = [
+            'name' => $name,
+            'description' => $description,
+            'active' => $active
+        ];
+        
+        $this->db->where('id', $id);
+        return $this->db->update('books',$record);
     }
     
     public function get_record_by_booknumber_buildings_id($booknumber, $buildings_id){
