@@ -28,7 +28,60 @@ class Catalogs extends CI_Controller{
         
         $this->load->view('catalogs/list',$view_params);
     }
-    public function insert(){}
+     public function check_books_catalog($param_1, $param_2){
+        
+        $records = $this->c_model->get_record_by_catalognumber_books_id($param_1, $param_2);
+        
+        if($records == null || empty($records)){
+            return TRUE;
+        }
+        else{
+            $this->form_validation->set_message('check_books_catalog', 'A könyv kódja nem egyedi a katalógusban!');
+            return FALSE;
+        }
+    }
+    public function insert(){
+        $this->load->library('form_validation');
+        
+        $this->form_validation->set_rules('catalognumber', 'Katalógus kódja', 'required|callback_check_books_catalog['.$this->input->post('books_id').']');
+        $this->form_validation->set_rules('name', 'Katalógus neve', 'required');
+        $this->form_validation->set_rules('books_id', 'Könyvének helye', 'required');     
+        $this->form_validation->set_rules('active', 'Katalógus státusza', 'required');     
+        
+        
+        if($this->form_validation->run() === TRUE){
+            if($this->c_model->insert(
+                    $this->input->post('books_id'),
+                    $this->input->post('catalognumber'),
+                    $this->input->post('name'),   
+                    $this->input->post('active'),
+                    empty($this->input->post('description')) ? NULL : $this->input->post('description'),
+            )){
+                redirect(base_url('catalogs/list'));
+            }
+                    
+        }
+        else{
+            $this->load->helper('form');
+
+            $this->load->model('books_model');
+            $list = $this->books_model->get_list();
+            $books = [];
+            foreach($list as &$item){
+                $books[$item->id] = $item->name;
+            }
+
+            $view_params = [
+                'status' => [ 1 => 'Active', 
+                                0 => 'Inactive'], 
+                'books' => $books
+            ];
+            $this->load->view('catalogs/insert', $view_params);      
+        }
+    }
     public function update(){}
     public function delete(){}
+    
+    
+    
 }

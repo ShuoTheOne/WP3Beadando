@@ -20,12 +20,34 @@ class Catalogs_model extends CI_Model{
     }
     
     public function get_list(){
-            $this->db->select('c.id','c.catalognumber','c.name','bo.name books_name');
+            $this->db->select('c.id, c.catalognumber, c.name, bo.name books_name');
             $this->db->from('catalogs c');
-            $this->db->join('books bo', 'books.id = c.books_id', 'inner');
-            $this->db-> order_by('bo.name','ASC');
+            $this->db->join('books bo', 'bo.id = c.books_id', 'inner');
+            $this->db->order_by('bo.name','ASC');
             $this->db->order_by('c.name','ASC');
             
             return $this->db->get()->result();
         }
+        
+     public function insert($books_id, $catalognumber, $name, $active, $description){
+        $record = [
+            'books_id' =>  $books_id, 
+            'catalognumber'       =>  $catalognumber, 
+            'name'       =>  $name, 
+            'active'     =>  $active, 
+            'description'    =>  $description
+        ];
+        
+        $this->db->insert('catalogs', $record);
+        return $this->db->insert_id();
+    }
+    
+    public function get_record_by_catalognumber_books_id($catalognumber, $books_id){
+        $this->db->select('*');
+        $this->db->from('catalogs');
+        $this->db->where('catalognumber', $catalognumber);
+        $this->db->where('books_id', $books_id);
+        
+        return $this->db->get()->result();
+    }
 }
