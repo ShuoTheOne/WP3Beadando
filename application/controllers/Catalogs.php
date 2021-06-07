@@ -16,6 +16,10 @@ class Catalogs extends CI_Controller{
     public function __construct(){
         parent::__construct();
         
+        if( !$this->ion_auth->logged_in('auth')){
+            redirect(base_url());
+        }
+        
          //$this->load->helper('url');
         $this->load->model('catalogs_model','c_model');
     }
@@ -64,6 +68,10 @@ class Catalogs extends CI_Controller{
         }
     }
     public function insert(){
+        if(!$this->ion_auth->in_group(['admin','konyvtaros'],false,false)){
+            redirect(base_url());
+        }
+        
         $this->load->library('form_validation');
         
         $this->form_validation->set_rules('catalognumber', 'Katalógus kódja', 'required|callback_check_books_catalog['.$this->input->post('books_id').']');
@@ -146,6 +154,10 @@ class Catalogs extends CI_Controller{
    
     }
     public function delete($catalogs_id = NULL) {
+        if(!$this->ion_auth->is_admin()){
+            redirect(base_url());
+        }
+        
         $this->load->helper('url'); // mindig töltsük be a helpert, ha pl. redirectelünk
         if($catalogs_id==NULL){
             redirect(base_url('catalogs/list'));

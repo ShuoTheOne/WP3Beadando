@@ -16,6 +16,10 @@ class Buildings extends CI_Controller{
     public function __construct(){
         parent::__construct();
         
+        if( !$this->ion_auth->logged_in('auth')){
+            redirect(base_url());
+        }
+        
         // $this->load->helper('url');
         $this->load->model('buildings_model','b_model');
     }
@@ -65,6 +69,10 @@ class Buildings extends CI_Controller{
         }
     }
     public function insert(){
+        if(!$this->ion_auth->in_group(['admin','epitesz'],false,false)){
+            redirect(base_url());
+        }
+        
         $this->load->library('form_validation');
         
         $this->form_validation->set_rules('kod', 'Épület kódja', 'required|callback_check_library_building['.$this->input->post('library_id').']');
@@ -147,6 +155,10 @@ class Buildings extends CI_Controller{
    
     }
         public function delete($buildings_id = NULL) {
+        if(!$this->ion_auth->is_admin()){
+            redirect(base_url());
+        }
+            
         $this->load->helper('url'); // mindig töltsük be a helpert, ha pl. redirectelünk
         if($buildings_id==NULL){
             redirect(base_url('buildings/list'));

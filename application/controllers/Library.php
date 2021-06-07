@@ -16,6 +16,10 @@ class Library extends CI_Controller {
     public function __construct() {
         parent::__construct();
         
+        if( !$this->ion_auth->logged_in()){
+            redirect(base_url('auth'));
+        }
+        
         $this->load->model('library_model');
        
         $this->lang->load('library');
@@ -54,6 +58,9 @@ class Library extends CI_Controller {
     }
     
     public function insert() {
+        if(!$this->ion_auth->in_group(['admin','polgarmester'],false,false)){
+            redirect(base_url());
+        }
         
         $this->load->library('form_validation'); //this->form_validation létrejön
         $this->form_validation->set_rules('library_name','Könyvtár neve', 'required|min_length[2]');
@@ -124,6 +131,10 @@ class Library extends CI_Controller {
     }
     
     public function delete($library_id = NULL) {
+        if(!$this->ion_auth->is_admin()){
+            redirect(base_url());
+        }
+        
         $this->load->helper('url'); // mindig töltsük be a helpert, ha pl. redirectelünk
         if($library_id==NULL){
             redirect(base_url('library/list'));
