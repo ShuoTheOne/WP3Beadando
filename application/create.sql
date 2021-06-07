@@ -59,3 +59,13 @@ CREATE TABLE catalogs
     CONSTRAINT FK_catalogs_books_id FOREIGN KEY (books_id) REFERENCES books(id),
     CONSTRAINT UQ_catalogs_books_id_catalognumber UNIQUE (books_id, catalognumber)
 );
+
+CREATE TABLE `files` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ `file_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+ `created` datetime NOT NULL,
+ `modified` datetime NOT NULL,
+ `status` enum('1','0') COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

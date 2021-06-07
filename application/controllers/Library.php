@@ -21,7 +21,7 @@ class Library extends CI_Controller {
         }
         
         $this->load->model('library_model');
-       
+        $this->load->model('file');
         $this->lang->load('library');
     }
     
@@ -30,12 +30,22 @@ class Library extends CI_Controller {
         $this->load->helper('url'); // központilag betölteni, hiszen ez az if ágon kívül is kell
         if($library_id == NULL)
         {
+        $errors=[];
+        if($this->session->has_userdata('errors')){
+            $errors=$this->session->userdata['errors'];
+            $this->session->unset_userdata('errors');
+        }
+            
         $view_params = [
           'title'   => 'Könyvtárak listája',
-          'records' => $this->library_model->get_list()
+          'records' => $this->library_model->get_list(),
+          'errors'  => $errors
         ];
         
         $this->load->view('library/list', $view_params);
+        $this->load->view('vw_upload');
+        $data = array();
+        
         }
         else{ //részletes nézet
             if(!is_numeric($library_id)){
@@ -132,7 +142,11 @@ class Library extends CI_Controller {
     
     public function delete($library_id = NULL) {
         if(!$this->ion_auth->is_admin()){
-            redirect(base_url());
+            $errors=[
+                'Nincs jogosultságod a könyvtárak törlésére! Ezt csak admin teheti meg!'
+            ];
+            $this->session->set_userdata(['$errors'=>$errors]);
+            redirect(base_url('library/list'));
         }
         
         $this->load->helper('url'); // mindig töltsük be a helpert, ha pl. redirectelünk
@@ -154,7 +168,23 @@ class Library extends CI_Controller {
       }
       else{
           show_error('A törlés sikertelen!');
-      }
-        
+      }    
     }
+    
+    public function upload_file(){
+        $config['allowed_types'] = 'jpg|png';
+        $config['upload_path'] ='./uploads/';
+        $this->load->library('upload',$config);
+        
+        if($this->upload->do_upload('image'))
+        {
+            print_r('Sikeres feltöltés');
+            redirect(base_url('library/list'));
+        }
+        else{
+            print_r('sikertelen');
+            redirect(base_url('library/list'));
+        }    
+    }
+    
 }

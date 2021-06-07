@@ -16,8 +16,8 @@ class Buildings extends CI_Controller{
     public function __construct(){
         parent::__construct();
         
-        if( !$this->ion_auth->logged_in('auth')){
-            redirect(base_url());
+        if( !$this->ion_auth->logged_in()){
+            redirect(base_url('auth'));
         }
         
         // $this->load->helper('url');
@@ -29,9 +29,15 @@ class Buildings extends CI_Controller{
         $this->load->helper('url'); // központilag betölteni, hiszen ez az if ágon kívül is kell
         if($buildings_id == NULL)
         {
+        $errors=[];
+        if($this->session->has_userdata('errors')){
+            $errors=$this->session->userdata['errors'];
+            $this->session->unset_userdata('errors');
+        }
         $view_params = [
           'title'   => 'Épületek listája',
-          'records' => $this->b_model->get_list()
+          'records' => $this->b_model->get_list(),
+          'errors'  => $errors
         ];
         
         $this->load->view('buildings/list', $view_params);
@@ -156,7 +162,11 @@ class Buildings extends CI_Controller{
     }
         public function delete($buildings_id = NULL) {
         if(!$this->ion_auth->is_admin()){
-            redirect(base_url());
+            $errors=[
+                'Nincs jogosultságod az épületek törlésére! Ezt csak admin teheti meg!'
+            ];
+            $this->session->set_userdata(['$errors'=>$errors]);
+            redirect(base_url('buildings/list'));
         }
             
         $this->load->helper('url'); // mindig töltsük be a helpert, ha pl. redirectelünk
