@@ -27,3 +27,5 @@
 ?>
 
 <?php echo form_close(); ?>
+
+<?php echo anchor(base_url('library/list'), 'Vissza a listához');?>

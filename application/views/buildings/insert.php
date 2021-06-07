@@ -13,3 +13,5 @@
 <?php echo form_button(['type' => 'submit', 'name' => 'submit'], 'Mentés'); ?>
 
 <?php echo form_close(); ?>
+
+<?php echo anchor(base_url('buildings/list'), 'Vissza az épület listához');?>

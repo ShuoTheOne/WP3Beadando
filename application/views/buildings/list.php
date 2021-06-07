@@ -1,5 +1,5 @@
 <h1><?=$title?></h1>
-
+<?php echo anchor(base_url('buildings/insert'), 'Épület hozzáadása');?>
 <?php if($records == null || empty($records)): ?>
     <p>Nincs rögzítve egyetlen épület sem</p>
 <?php else: ?>
@@ -32,3 +32,6 @@
     
 <?php endif; ?>
 
+<?php echo anchor(base_url('library/list'), 'Könyvtárak');?> <br/>
+<?php echo anchor(base_url('books/list'), 'Könyvek');?> <br/>
+<?php echo anchor(base_url('catalogs/list'), 'Katalógusok');?> <br/>
